@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { AppWallet } from '@meshsdk/core';
 import { BlockfrostProvider } from '@meshsdk/core';
-import { useWallet } from '@meshsdk/react';
+import { CardanoWallet, useWallet } from '@meshsdk/react';
 import { useState } from "react";
 import { NextPageWithLayout } from "@/models";
 import { MainLayout } from "components/layout";
@@ -77,7 +77,6 @@ const Home: NextPageWithLayout = () => {
         <h1 className="title">
           Kết nối ví và làm theo hướng dẫn
         </h1>
-
         <Card >
       <CardContent>
         <Typography gutterBottom>
@@ -88,7 +87,7 @@ const Home: NextPageWithLayout = () => {
           2. Mở quà đúng sẽ cộng, sai sẽ trừ điểm
         </Typography>
         <Typography>
-          3. Có thể đổi điểm lấy ADA, đổi từ 2 ADA trở lên, phí là 1 ADA(duy trì hệ thống) và tính cả phí giao dịch
+          3. Có thể đổi điểm lấy ADA, đổi từ 20 điểm trở lên, phí là 1 ADA(duy trì hệ thống) và tính cả phí giao dịch
         </Typography>
       </CardContent>
       <CardActions>

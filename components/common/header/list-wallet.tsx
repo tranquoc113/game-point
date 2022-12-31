@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useEffect, useContext } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
@@ -25,33 +25,39 @@ const style = {
 import Link from "next/link";
 import { useWallet } from '@meshsdk/react';
 import { useWalletList } from '@meshsdk/react';
+import { useAuth } from '@/hooks';
+import { AppContext } from '@/pages/_app';
+import { useRouter } from 'next/router';
 
 interface Prop {
     open: boolean,
-    handleClose(): void
+    handleClose:() => void,
 }
 export function ModalWallet(props: Prop) {
+    const router = useRouter()
     const { open, handleClose } = props;
-    const { connected, wallet, connect } = useWallet();
+    const { connected, wallet, connect, connecting } = useWallet();
+    const { login } = useAuth()
 
+    const { update } = useContext(AppContext);
     const wallets = useWalletList();
 
-    const handConnect = (name: string) => {
-        connect(name).then((data) => {
-            console.log("oki----", data)
-        }).catch((e) => {
-            console.log("erro")
-        })
+    useEffect(()=>{
+        getWallet()
+    },[wallet])
+
+   async function getWallet() {
+    if (wallet && connected){
+        const adress = await wallet.getRewardAddresses()
+        // const balances = await wallet.getBalance();
+        login(adress[0]);
+        handleClose()
+
     }
+   }
 
-    const listWallet = () => {
-        const listItems = wallets.map((wallet, i) =>
-            <li key={i.toString()}>{wallet.name}</li>
-        );
-        return (
-            <ul>{listItems}</ul>
-        );
-
+    const handConnect =(name: string) => {
+        connect(name)
     }
 
     return (
@@ -89,7 +95,7 @@ export function ModalWallet(props: Prop) {
                 <List component="nav" aria-label="mailbox folders">
                     {wallets.map((wallet, i) =>
                         <div key={i}>
-                            <ListItem button>
+                            <ListItem button onClick={()=>handConnect(wallet.name)}>
                                 <ListItemText primary={wallet.name} />
                                 <ListItemAvatar>
                                     <Avatar>

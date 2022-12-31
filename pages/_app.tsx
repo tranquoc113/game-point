@@ -1,20 +1,23 @@
 import "../styles/globals.css";
-import type { AppProps } from "next/app";
 import { MeshProvider } from "@meshsdk/react";
-import CssBaseline from "@mui/material/CssBaseline";
 import { AppPropsWithLayout } from "@/models";
 import { EmptyLayout } from "components/layout";
-import { ThemeProvider } from "@mui/material/styles";
+import { createCtx } from "@/components/common";
 
+const [ctx, AppProvider] = createCtx("someText");
+export const AppContext = ctx;
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const Layout = Component.Layout ?? EmptyLayout;
+
   return (
     <>
       <MeshProvider>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        {/* <AppProvider> */}
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        {/* </AppProvider> */}
       </MeshProvider>
     </>
   );

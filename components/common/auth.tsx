@@ -6,12 +6,12 @@ interface AuthProps {
   children: any;
 }
 export function Auth({ children }: AuthProps) {
-  const { address, point } = useAuth();
+  const { address } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (!address) router.push('/login')
-  }, [router, address, point]);
+  }, [router, address]);
 
   if (!address) return <p>Loading ...</p>
 
