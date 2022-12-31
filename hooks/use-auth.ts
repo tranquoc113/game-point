@@ -5,16 +5,18 @@ import { useEffect, useState } from 'react';
 // <Auth>{children}</Auth>
 
 export function useAuth() {
-	const [address, setAddress] = useState<string | null>("")
+	const [point, setPoint] = useState<number>(0)
+	const [name, setName] = useState<string>("")
 
 	useEffect(()=>{
-		setAddress(LocalStorage.accessAdress)
+		const storage_point = LocalStorage.accessPoint
+		if(storage_point) setPoint(Number(storage_point));
+		const nameWallet = LocalStorage.accessNameWallet
+		if(nameWallet) setName(nameWallet)
 	},[])
-	// const address =  new LocalStorage.accessAdress
-	// const point = LocalStorage.accessPoint
 
-	function login(address: string) {
-		LocalStorage.setAddress(address);
+	function login(name: string) {
+		LocalStorage.setNameWallet(name)
 	}
 
 	async function logout() {
@@ -22,8 +24,9 @@ export function useAuth() {
 	}
 
 	return {
-		address,
+		point,
 		login,
 		logout,
+		name,
 	}
 }

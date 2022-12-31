@@ -1,4 +1,5 @@
 import { useAuth } from "@/hooks";
+import { useWallet } from "@meshsdk/react";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 
@@ -6,14 +7,15 @@ interface AuthProps {
   children: any;
 }
 export function Auth({ children }: AuthProps) {
-  const { address } = useAuth();
+  const {connected} = useWallet();
   const router = useRouter();
 
-  useEffect(() => {
-    if (!address) router.push('/login')
-  }, [router, address]);
 
-  if (!address) return <p>Loading ...</p>
+  useEffect(() => {
+    if (!connected) router.push('/')
+  }, [router]);
+
+  if (!connected) return <p>Loading ...</p>
 
 
   return <div>{children}</div>;

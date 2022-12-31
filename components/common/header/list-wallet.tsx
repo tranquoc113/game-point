@@ -8,7 +8,8 @@ import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-import Image from 'next/image'
+import Image from 'next/image';
+import Alert from '@mui/material/Alert';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -22,7 +23,6 @@ const style = {
     p: 4,
 };
 
-import Link from "next/link";
 import { useWallet } from '@meshsdk/react';
 import { useWalletList } from '@meshsdk/react';
 import { useAuth } from '@/hooks';
@@ -37,91 +37,64 @@ export function ModalWallet(props: Prop) {
     const router = useRouter()
     const { open, handleClose } = props;
 
-    const { connected, wallet, connect, connecting } = useWallet();
-    const { login } = useAuth()
+    const { connected, wallet, connect, error } = useWallet();
+    const { login, name } = useAuth()
+    const [nameWallet, setNameWallet] = useState<string>("");
 
     const { update } = useContext(AppContext);
     const wallets = useWalletList();
 
     useEffect(() => {
-        getWallet();
-        if (connected) {
-            handleClose()
+        if (connected && open && nameWallet) {
+            login(nameWallet);
+            handleClose();
         }
     }, [wallet])
 
-    async function getWallet() {
-        if (wallet && connected) {
-            const adress = await wallet.getRewardAddresses()
-            // const balances = await wallet.getBalance();
-            login(adress[0]);
-
-        }
-    }
-
     const handConnect = (name: string) => {
+        setNameWallet(name)
         connect(name);
     }
 
     return (
-        <>
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Chọn ví để kết nối
-                    </Typography>
-                    {/* 
-                <ul>
+        <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+        >
+            <Box sx={style}>
+                <Typography id="modal-modal-title" variant="h6" component="h2">
+                    Chọn ví để kết nối
+                </Typography>
+
+                <List component="nav" aria-label="item wallet">
                     {wallets.map((wallet, i) =>
-                        <button key={i}>{wallet.name}</button>
+                        <div key={i}>
+                            <ListItem button onClick={() => handConnect(wallet.name)}>
+                                <ListItemText primary={wallet.name} />
+                                <ListItemAvatar>
+                                    <Avatar>
+                                        <Image
+                                            src={wallet.icon}
+                                            alt="Logo wallet blockchain"
+                                            width={30}
+                                            height={30}
+                                        />
+                                    </Avatar>
+                                </ListItemAvatar>
+                            </ListItem>
+                            <Divider />
+                        </div>
                     )}
-                </ul> */}
+                </List>
+                <Typography>
+                    {
+                        error ? <Alert severity="error">Kết nối với ví thất bại, hãy thử lại hoặc kết nối với ví khác!</Alert> : ""
+                    }
+                </Typography>
 
-                    {/* {
-                    wallet && <List sx={style} component="nav" aria-label="mailbox folders">
-                        {wallets.map((wallet, i) => {
-                            return (
-                                <>
-                                    <button key={i + "xxxx"}>{wallet.name}</button>
-
-                                </>
-                            );
-                        })}
-                    </List>
-                } */}
-
-
-                    <List component="nav" aria-label="mailbox folders">
-                        {wallets.map((wallet, i) =>
-                            <div key={i}>
-                                <ListItem button onClick={() => handConnect(wallet.name)}>
-                                    <ListItemText primary={wallet.name} />
-                                    <ListItemAvatar>
-                                        <Avatar>
-                                            <Image
-                                                src={wallet.icon}
-                                                alt="Picture of the author"
-                                                width={30}
-                                                height={30}
-                                            />
-                                            {/* <img src={wallet.icon} style={{ width: '30px' }} /> */}
-                                        </Avatar>
-                                    </ListItemAvatar>
-                                </ListItem>
-                                <Divider />
-                            </div>
-                        )}
-                    </List>
-
-                </Box>
-            </Modal>
-
-
-        </>
+            </Box>
+        </Modal>
     );
 }

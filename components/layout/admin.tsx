@@ -7,7 +7,7 @@ import * as React from 'react';
 import { Auth } from '../common';
 
 export function AdminLayout({children}: LayoutProps) {
-  const {address, logout} = useAuth();
+  const {logout} = useAuth();
   const router = useRouter()
 
 	async function handleLogoutClick() {

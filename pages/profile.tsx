@@ -5,16 +5,19 @@ import { Auth } from "components/common";
 
 
 
-const Game: NextPageWithLayout = () => {
+const Profile: NextPageWithLayout = () => {
+    const { wallet } = useWallet()
+
+    console.log(wallet)
 
     return (
         <Auth>
             <div className="container">
-                Game
+                Pofile
             </div>
         </Auth>
 
     );
 }
-Game.Layout = MainLayout
-export default Game
+Profile.Layout = MainLayout
+export default Profile
