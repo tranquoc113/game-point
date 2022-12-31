@@ -10,40 +10,42 @@ import { useWallet } from '@meshsdk/react';
 import { useWalletList } from '@meshsdk/react';
 import { ModalWallet } from "./list-wallet";
 import { AppContext } from "@/pages/_app";
-
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 export function HeaderDesktop() {
   const [open, setOpen] = useState<boolean>(false);
   const { state, update } = useContext(AppContext);
   const router = useRouter()
-  const { connected, wallet, connect } = useWallet();
+  const { connected, wallet, error } = useWallet();
   const [balance, setBalance] = useState<number>(0);
-
+  const [loading, setLoading] = useState<boolean>(false);
   const wallets = useWalletList();
   const handleClose = () => {
     setOpen(false);
+    setLoading(true);
     getWallet();
   };
   const handOpen = () => setOpen(true);
 
   useEffect(() => {
-    if (wallet && connected) {
-      async () => {
-
-
-      }
+    if (wallet && connected || error) {
+      setLoading(false)
     }
   }, [wallet]);
 
   const getWallet = async () => {
-    const ada = await wallet.getBalance()
-    const result = ada.find((obj) => {
-      return obj.unit === "lovelace";
-    });
-    if (result) {
-      setBalance(Math.round(result.quantity / 1000000))
+    if (wallet && connected) {
+      const ada = await wallet.getBalance()
+      const result = ada.find((obj) => {
+        return obj.unit === "lovelace";
+      });
+      if (result) {
+        setBalance(Math.round(result.quantity / 1000000))
+      }
     }
+
   }
 
 
@@ -77,6 +79,12 @@ export function HeaderDesktop() {
         </Toolbar>
       </MuiAppBar>
       <ModalWallet handleClose={handleClose} open={open} />
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 3 }}
+        open={loading}
+      >
+        <CircularProgress />
+      </Backdrop>
     </>
   );
 }

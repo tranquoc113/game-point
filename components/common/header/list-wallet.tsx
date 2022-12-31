@@ -1,4 +1,4 @@
-import { useEffect, useContext } from 'react';
+import { useEffect, useContext, useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
@@ -31,54 +31,58 @@ import { useRouter } from 'next/router';
 
 interface Prop {
     open: boolean,
-    handleClose:() => void,
+    handleClose: () => void,
 }
 export function ModalWallet(props: Prop) {
     const router = useRouter()
     const { open, handleClose } = props;
+
     const { connected, wallet, connect, connecting } = useWallet();
     const { login } = useAuth()
 
     const { update } = useContext(AppContext);
     const wallets = useWalletList();
 
-    useEffect(()=>{
-        getWallet()
-    },[wallet])
+    useEffect(() => {
+        getWallet();
+        if (connected) {
+            handleClose()
+        }
+    }, [wallet])
 
-   async function getWallet() {
-    if (wallet && connected){
-        const adress = await wallet.getRewardAddresses()
-        // const balances = await wallet.getBalance();
-        login(adress[0]);
-        handleClose()
+    async function getWallet() {
+        if (wallet && connected) {
+            const adress = await wallet.getRewardAddresses()
+            // const balances = await wallet.getBalance();
+            login(adress[0]);
 
+        }
     }
-   }
 
-    const handConnect =(name: string) => {
-        connect(name)
+    const handConnect = (name: string) => {
+        connect(name);
     }
 
     return (
-        <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-        >
-            <Box sx={style}>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                    Chọn ví để kết nối
-                </Typography>
-                {/* 
+        <>
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        Chọn ví để kết nối
+                    </Typography>
+                    {/* 
                 <ul>
                     {wallets.map((wallet, i) =>
                         <button key={i}>{wallet.name}</button>
                     )}
                 </ul> */}
 
-                {/* {
+                    {/* {
                     wallet && <List sx={style} component="nav" aria-label="mailbox folders">
                         {wallets.map((wallet, i) => {
                             return (
@@ -92,29 +96,32 @@ export function ModalWallet(props: Prop) {
                 } */}
 
 
-                <List component="nav" aria-label="mailbox folders">
-                    {wallets.map((wallet, i) =>
-                        <div key={i}>
-                            <ListItem button onClick={()=>handConnect(wallet.name)}>
-                                <ListItemText primary={wallet.name} />
-                                <ListItemAvatar>
-                                    <Avatar>
-                                        <Image
-                                            src={wallet.icon}
-                                            alt="Picture of the author"
-                                            width={30}
-                                            height={30}
-                                        />
-                                        {/* <img src={wallet.icon} style={{ width: '30px' }} /> */}
-                                    </Avatar>
-                                </ListItemAvatar>
-                            </ListItem>
-                            <Divider />
-                        </div>
-                    )}
-                </List>
+                    <List component="nav" aria-label="mailbox folders">
+                        {wallets.map((wallet, i) =>
+                            <div key={i}>
+                                <ListItem button onClick={() => handConnect(wallet.name)}>
+                                    <ListItemText primary={wallet.name} />
+                                    <ListItemAvatar>
+                                        <Avatar>
+                                            <Image
+                                                src={wallet.icon}
+                                                alt="Picture of the author"
+                                                width={30}
+                                                height={30}
+                                            />
+                                            {/* <img src={wallet.icon} style={{ width: '30px' }} /> */}
+                                        </Avatar>
+                                    </ListItemAvatar>
+                                </ListItem>
+                                <Divider />
+                            </div>
+                        )}
+                    </List>
 
-            </Box>
-        </Modal>
+                </Box>
+            </Modal>
+
+
+        </>
     );
 }
