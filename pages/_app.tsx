@@ -4,7 +4,7 @@ import { AppPropsWithLayout } from "@/models";
 import { EmptyLayout } from "components/layout";
 import { createCtx } from "@/components/common";
 
-const [ctx, AppProvider] = createCtx("someText");
+const [ctx, AppProvider] = createCtx(false);
 export const AppContext = ctx;
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
@@ -13,11 +13,11 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <>
       <MeshProvider>
-        {/* <AppProvider> */}
+        <AppProvider>
           <Layout>
             <Component {...pageProps} />
           </Layout>
-        {/* </AppProvider> */}
+        </AppProvider>
       </MeshProvider>
     </>
   );

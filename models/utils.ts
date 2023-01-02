@@ -6,8 +6,8 @@ export class LocalStorage {
     return localStorage.getItem(STORAGE_KEY.ACCESS_ADRESS) || null;
   }
 
-  static get accessPoint() {
-    return localStorage.getItem(STORAGE_KEY.POINT) || 0;
+  static get accessPoint(){
+      return localStorage.getItem(STORAGE_KEY.POINT) || 0;
   }
 
   static get accessNameWallet() {
@@ -24,6 +24,10 @@ export class LocalStorage {
 
   static setNameWallet(name: string) {
     localStorage.setItem(STORAGE_KEY.NAME_WALLET, name);
+  }
+
+  static removeNameWallet(){
+    localStorage.removeItem(STORAGE_KEY.NAME_WALLET)
   }
 }
 

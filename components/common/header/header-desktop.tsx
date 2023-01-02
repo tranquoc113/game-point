@@ -19,32 +19,27 @@ import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 
-const options = ['Create a merge commit', 'Squash and merge', 'Rebase and merge'];
-
 
 export function HeaderDesktop() {
   const [open, setOpen] = useState<boolean>(false);
   const { state, update } = useContext(AppContext);
   const router = useRouter()
-  const { connected, wallet, error, connect } = useWallet();
+  const { connected, wallet, error, connect, disconnect } = useWallet();
   const [balance, setBalance] = useState<number>(0);
-  const { point, name } = useAuth();
+  const { name, logout, getPoint, pointFirst } = useAuth();
+  const [point, setPoint] = useState<number>(0);
 
   const [openB, setOpenB] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
   const [address, setAddress] = useState<string>("");
 
-  const handleClickB = () => {
-    console.info(`You clicked ${options[selectedIndex]}`);
-  };
-
-  const handleMenuItemClick = (
-    event: React.MouseEvent<HTMLLIElement, MouseEvent>,
-    index: number,
+  const handleLogout = (
   ) => {
-    setSelectedIndex(index);
-    setOpenB(false);
+    logout();
+    disconnect();
+    setBalance(0);
+    setAddress("")
+    router.push("/");
   };
 
   const handleToggle = () => {
@@ -69,29 +64,40 @@ export function HeaderDesktop() {
   };
   const handOpen = () => setOpen(true);
 
+  useEffect(()=>{
+    if (pointFirst <= 0) {
+      router.push("/profile")
+    }
+    setPoint(pointFirst)
+  },[pointFirst]);
+
+  useEffect(()=>{
+    if(state){
+      setPoint(getPoint());
+      getWallet();
+      update(false);
+    }
+  },[state, point]);
+
+
+
   useEffect(() => {
     getWallet();
   }, [wallet, name]);
 
   const getWallet = async () => {
-    console.log("name----", name)
 
     if (wallet && connected) {
       const ada = await wallet.getBalance()
       const ares = await wallet.getRewardAddresses();
       setAddress(ares[0])
-      console.log(ares)
       const result = ada.find((obj) => {
         return obj.unit === "lovelace";
       });
       if (result) {
-        setBalance(Math.round(result.quantity / 1000000))
+        setBalance(result.quantity / 1000000)
       }
-      // if(point <= 0){
-      //   router.push("/profile")
-      // }else{
-      //   router.push("/game")
-      // }
+      
     } else if (name) {
       connect(name)
     }
@@ -123,8 +129,8 @@ export function HeaderDesktop() {
               balance > 0 && <React.Fragment>
                 <ButtonGroup variant="outlined" ref={anchorRef} aria-label="split button" onClick={handleToggle}>
                   <Button>{point.toLocaleString()} P</Button>
-                  <Button>{balance.toLocaleString()} A</Button>
-                  <Button style={{"textTransform": "lowercase"}}>{address.slice(0,20)} &#x25BF;</Button>
+                  <Button>{balance.toLocaleString().split(".")[0]} A</Button>
+                  <Button style={{ "textTransform": "lowercase" }}>{address.slice(0, 20)} &#x25BF;</Button>
                 </ButtonGroup>
                 <Popper
                   sx={{
@@ -147,16 +153,18 @@ export function HeaderDesktop() {
                       <Paper>
                         <ClickAwayListener onClickAway={handleCloseB}>
                           <MenuList id="split-button-menu" autoFocusItem>
-                            {options.map((option, index) => (
-                              <MenuItem
-                                key={option}
-                                disabled={index === 2}
-                                selected={index === selectedIndex}
-                                onClick={(event) => handleMenuItemClick(event, index)}
-                              >
-                                {option}
-                              </MenuItem>
-                            ))}
+
+                            <MenuItem
+                              onClick={(event) => router.push("/profile")}
+                            >
+                              Thông tin chung
+                            </MenuItem>
+
+                            <MenuItem
+                              onClick={(event) => handleLogout()}
+                            >
+                              Ngắt kết nối
+                            </MenuItem>
                           </MenuList>
                         </ClickAwayListener>
                       </Paper>
