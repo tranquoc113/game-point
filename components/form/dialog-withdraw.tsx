@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks';
 import { AppContext } from '@/pages/_app';
 import { BlockfrostProvider } from '@meshsdk/core';
 import { AppWallet } from '@meshsdk/core';
+import { demoMnemonic } from '@/config';
 const blockchainProvider = new BlockfrostProvider('preprodsrIncUaXn1KG93CZRnn28HNN8wrZPx5k');
 const my_wallet = new AppWallet({
     networkId: 0,
@@ -18,7 +19,7 @@ const my_wallet = new AppWallet({
     submitter: blockchainProvider,
     key: {
         type: 'mnemonic',
-        words: ['energy', 'note', 'snack', 'kingdom', 'search', 'miss', 'wood', 'increase', 'around', 'light', 'pelican', 'pitch', 'found', 'pride', 'fabric', 'intact', 'sudden', 'genuine', 'ordinary', 'near', 'bread', 'zebra', 'popular', 'ignore'],
+        words: demoMnemonic,
     },
 });
 interface Props {
@@ -30,15 +31,14 @@ export default function AlertDialogWithdraw({ open, point, handleClose }: Props)
     const { wallet } = useWallet();
     const { changePoint } = useAuth();
     const { update } = React.useContext(AppContext);
-    const {pointFirst} = useAuth();
+
+    console.log(my_wallet.getPaymentAddress())
 
 
     const handleWithdraw = async () => {
         try {
             const quantity = ((point-10)/10) * 1000000
-            console.log("quantity----", quantity)
             const recipientAddress = await wallet.getChangeAddress();
-            console.log("reci---", recipientAddress)
             const tx = new Transaction({ initiator: my_wallet })
                 .sendLovelace(
                     recipientAddress,
@@ -48,12 +48,11 @@ export default function AlertDialogWithdraw({ open, point, handleClose }: Props)
             const signedTx = await my_wallet.signTx(unsignedTx);
             const txHash = await my_wallet.submitTx(signedTx);
             if (txHash) {
-                changePoint(pointFirst - point);
+                changePoint(-point);
                 update(true);
                 handleClose();
             }
         } catch (error) {
-            console.log("erorr---", error)
         }
     };
 
