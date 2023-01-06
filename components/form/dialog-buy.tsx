@@ -9,6 +9,20 @@ import { Transaction } from '@meshsdk/core';
 import { useWallet } from '@meshsdk/react';
 import { useAuth } from '@/hooks';
 import { AppContext } from '@/pages/_app';
+import { BlockfrostProvider } from '@meshsdk/core';
+import { AppWallet } from '@meshsdk/core';
+import { demoMnemonic } from '@/config';
+
+const blockchainProvider = new BlockfrostProvider('preprodsrIncUaXn1KG93CZRnn28HNN8wrZPx5k');
+const my_wallet = new AppWallet({
+    networkId: 0,
+    fetcher: blockchainProvider,
+    submitter: blockchainProvider,
+    key: {
+        type: 'mnemonic',
+        words: demoMnemonic,
+    },
+});
 
 interface Props {
     open: boolean,
@@ -25,7 +39,7 @@ export default function AlertDialog({ open, ada_buy, handleClose }: Props) {
         try {
             const tx = new Transaction({ initiator: wallet })
                 .sendLovelace(
-                    'addr_test1qrek996jsz9ls3h8mks50fkxw69j8y408nccud35uy337frfjf44wjfqadmas82jpp32fvhxf7fpr0axrmm96kg639zsmhcas8',
+                    my_wallet.getPaymentAddress(),
                     (ada_buy * 1000000).toString()
                 )
             const unsignedTx = await tx.build();
