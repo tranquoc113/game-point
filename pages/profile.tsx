@@ -104,7 +104,9 @@ const Profile: NextPageWithLayout = () => {
     }
 
     const handleWithdraw = () => {
-        // const value = valueBuy.toFixed(1);
+        if(valueWithdraw<2){
+            return;
+        }
         setOpenDialogWithddraw(true)
     }
 
