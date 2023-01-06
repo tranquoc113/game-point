@@ -13,7 +13,7 @@ export function Auth({ children }: AuthProps) {
 
   useEffect(() => {
     console.log("connect-------",connected)
-    // if (!connected) router.push('/')
+    if (!connected) router.push('/')
   }, [router]);
 
   if (!connected) return <p>Loading ...</p>
